@@ -1,0 +1,70 @@
+<nz-layout>
+    <nz-header>
+        <div class="logo">DEMO</div>
+        <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+            <li nz-menu-item nzSelected>nav 1</li>
+            <li nz-menu-item>nav 2</li>
+            <li nz-menu-item>nav 3</li>
+        </ul>
+    </nz-header>
+    <nz-layout id="page-main" #pageMain [style.height.px]="mainHeight">
+        <nz-sider nzWidth="200px" [style.height.px]="mainHeight" nzTheme="dark">
+            <div class="aside-title">
+                <div class="aside-title-logo">
+                    <i [class]="datas.icon"></i>
+                </div>
+                <div class="aside-title-text">{{datas.label}}</div>
+            </div>
+            <ul nz-menu [nzMode]="'inline'" class="sidebar-nav" tabindex="1" #ul>
+                <div style="padding-bottom: 10px;">
+                    <ul *ngFor="let sideList of datas.sideLists">
+                        <li *ngIf="sideList.children" class="first-li" nz-submenu>
+                            <a href="javascript:;" class="nav-first-level" title>
+                                <ng-container *ngIf="sideList.icon&&sideList.icon.indexOf('anticon') > -1">
+                                    <i nz-icon
+                                        [nzType]="sideList.icon.split('-').slice(1).join('-')"></i>{{sideList.label}}
+                                </ng-container>
+                                <ng-container *ngIf="sideList.icon&&sideList.icon.indexOf('anticon') <= -1">
+                                    <i [class]="sideList.icon"></i>{{sideList.label}}
+                                </ng-container>
+                            </a>
+                            <ul class="nav-second-level">
+                                <ng-container *ngFor="let sideChildrenList of sideList.children">
+                                    <li nz-menu-item>
+                                        <a *ngIf="sideChildrenList.path"
+                                            [attr.href]="'/' + sideChildrenList.path + '/#/' + sideChildrenList.link"
+                                            [attr.target]="sideChildrenList.target" routerLinkActive="active">
+                                            <i class="fa fa-dot"></i>{{sideChildrenList.label}}
+                                        </a>
+                                        <a *ngIf="!sideChildrenList.path" [routerLink]="'/'+sideChildrenList.link"
+                                            routerLinkActive="active" [queryParams]="sideChildrenList.params"
+                                            [attr.target]="sideChildrenList.target">
+                                            <i class="fa fa-dot"></i>{{sideChildrenList.label}}
+                                        </a>
+                                    </li>
+                                </ng-container>
+                            </ul>
+                        </li>
+                        <li *ngIf="!sideList.children " class="first-li side-li" nz-menu-item
+                            [nzSelected]="sideList.selected">
+                            <a *ngIf="sideList.path" [attr.href]="'/' + sideList.path + '/#/' + sideList.link"
+                                [attr.target]="sideList.target" routerLinkActive="active">
+                                <i [class]="sideList.icon"></i>{{sideList.label}}
+                            </a>
+                            <a *ngIf="!sideList.path" [routerLink]="'/'+sideList.link" routerLinkActive="active"
+                                [queryParams]="sideList.params" [attr.target]="sideList.target">
+                                <i [class]="sideList.icon"></i>{{sideList.label}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </ul>
+        </nz-sider>
+        <nz-layout class="inner-layout">
+            <nz-content [style.height.px]="mainHeight">
+                <router-outlet></router-outlet>
+            </nz-content>
+        </nz-layout>
+    </nz-layout>
+</nz-layout>

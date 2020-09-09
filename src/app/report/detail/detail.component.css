@@ -1,0 +1,16 @@
+.chart-panel {
+  height: 240px;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  margin-bottom: 20px;
+}
+
+.chart-panel-header {
+  padding: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.container-pdf {
+  width: 190mm;
+  margin: 0 auto;
+}

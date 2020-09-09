@@ -1,0 +1,236 @@
+<div class="page-title">
+    <h4>资产管理</h4>
+</div>
+
+<div class="table-top">
+    <div class="table-operations clearfix">
+        <div class="pull-left">
+            <button nz-button nzType="primary" class="btn-add" (click)="createModel()"><i
+                    class="fas fa-plus"></i>新建</button>
+            <div class="table-top-opt-container">
+                <button nz-button class="table-top-opt" (click)="deleteData(null,deleteModel)">删除</button></div>
+            <div class="table-top-opt-container">
+                <button nz-button class="table-top-opt" (click)="updateIndex()">更新索引</button></div>
+        </div>
+        <div class="pull-right">
+            <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+                <input type="text" nz-input [(ngModel)]="queryValue" placeholder="请输入名称/ip" />
+            </nz-input-group>
+            <ng-template #suffixIconButton>
+                <button nz-button nzSearch (click)="getTableDatas(false, queryValue)">
+                    <i class="anticon anticon-search"></i>
+                </button>
+            </ng-template>
+            <button nz-button class="table-top-opt" nz-popover [nzContent]="'刷新'" (click)="getTableDatas(true)">
+                <i class="anticon anticon-reload"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<nz-table #nzTable [nzData]="dataSet" [nzPageSize]="10" [nzFrontPagination]='false' [nzNoResult]="noResult"
+    nzShowSizeChanger='true' [nzShowTotal]="rangeTemplate" [nzLoading]="isLoading"
+     (nzPageIndexChange)="refreshStatus()"
+    (nzPageSizeChange)="refreshStatus()" class="table-fixed" [nzPageIndex]='current' [nzTotal]='totalCount'>
+    <thead>
+        <tr>
+            <th nzWidth="35px" nzShowCheckbox [(nzChecked)]="allChecked" [nzIndeterminate]="indeterminate"
+                (nzCheckedChange)="checkAll($event)"></th>
+            <th nzWidth="160px">ID/名称</th>
+            <th nzWidth="90px">ip地址</th>
+            <th nzWidth="90px">设备类型</th>
+            <th nzWidth="140px">日志类型</th>
+            <th nzWidth="140px">创建时间</th>
+            <th nzWidth="140px">备注</th>
+            <th nzWidth="140px">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of nzTable.data; let i = index">
+            <td nzShowCheckbox [(nzChecked)]="data.checked" (nzCheckedChange)="refreshStatus($event)"></td>
+            <td>
+                <p nz-popover [nzContent]="data._id" class="ellipsis">
+                    <a class="ellipsis" [routerLink]="['./detail', data._id]">{{
+            data._id
+          }}</a>
+                </p>
+                <p>
+                    <span nz-popover [nzContent]="data._source.vmName" class="ellipsis"
+                        style="max-width: calc(100% - 20px);">{{
+            data._source.vmName
+          }}</span>
+                    <a class="td-opt" nz-popover nzTrigger="click" [nzVisible]="popoverVisible[i]"
+                        [nzContent]="contentTemplate" (click)="popoverVisible[i] = 'true'"
+                        (nzVisibleChange)="visibleChange()">
+                        <i class="anticon anticon-edit"></i>
+                    </a>
+                    <ng-template #contentTemplate>
+                        <div class="td-opt-content clearfix">
+                            <div [class.has-error]="hasError">
+                                <input nz-input [ngModel]="data._source.vmName" (ngModelChange)="modelChange($event)" />
+                                <div class="help-text ant-form-explain">
+                                    1-36个字符,只能包含中文、大小写字母、数字和特殊字符中的"-"
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <button nz-button nzType="primary"
+                                    (click)="updateInstance(i, data._source.vmName, data)">
+                                    <i class="anticon anticon-check"></i>
+                                </button>
+                                <button nz-button nzType="default" (click)="popoverVisible[i] = false">
+                                    <i class="anticon anticon-close"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p>
+            </td>
+            <td>{{data._source.ip|| "--"}}</td>
+            <td>{{data._source.device|| "--"}}</td>
+            <td>
+                <p>{{ data._source.logs || "--" }}</p>
+            </td>
+            <td>
+                <p>{{ (data._source.createdTime | date: "y-MM-dd HH:mm:ss") || "--" }}</p>
+            </td>
+            <td>
+                <p>{{ data._source.remark || "--" }}</p>
+            </td>
+            <td class=" table-opt">
+                <a (click)="editModel(data)">编辑</a>
+                <a (click)="deleteData(data)">删除</a>
+                <a (click)="deleteData(data)">查看</a>
+
+            </td>
+        </tr>
+    </tbody>
+    <ng-template #noResult>
+        <nz-empty></nz-empty>
+    </ng-template>
+    <ng-template #rangeTemplate let-range="range" let-total>
+        <!--第{{range[0]}}-{{range[1]<=total ? range[1] : total}}条 -->共{{ totalCount  }}条
+    </ng-template>
+</nz-table>
+<ng-template #deleteModel>
+    <p>确定删除以下资产么？</p>
+    <nz-table #nzTable3 [nzFrontPagination]="false" [nzData]="canDelData" nzShowSizeChanger [nzNoResult]="noResult1"
+        [nzShowTotal]="rangeTemplate1" [nzShowPagination]="false" nzBordered>
+        <thead>
+            <tr>
+                <th>ID/名称</th>
+                <th>ip</th>
+                <th>创建时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of nzTable3.data; let i = index">
+                <td>
+                    <p nz-popover [nzContent]="data._id" class="ellipsis">
+                        <a class="ellipsis" [routerLink]="['./detail', data._id]">{{
+            data._id
+          }}</a>
+                    </p>
+                    <p>
+                        <span nz-popover [nzContent]="data._source.vmName" class="ellipsis"
+                            style="max-width: calc(100% - 20px);">{{
+            data._source.vmName
+          }}</span>
+                    </p>
+                </td>
+                <td>{{data._source.ip|| "--"}}</td>
+
+                <td>
+                    <p>{{ (data._source.createdTime | date: "y-MM-dd HH:mm:ss") || "--" }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</ng-template>
+
+<ng-template #addModel>
+    <div [formName]="addForm">
+        <form nz-form [formGroup]="addForm" #addFormComponent>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="vmName">主机名称</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入正确的主机名称!">
+                    <input nz-input formControlName="vmName" id="vmName">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="ip">IP地址</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入正确的IP地址!">
+                    <input nz-input formControlName="ip" id="ip">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="device">设备类型</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请选择设备类型!">
+                    <nz-select formControlName="device" nzPlaceHolder="请选择设备类型">
+                        <nz-option nzValue="system" nzLabel="操作系统"></nz-option>
+                        <nz-option nzValue="app" nzLabel="应用系统"></nz-option>
+                        <nz-option nzValue="sucerity" nzLabel="安全设备" nzDisabled></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="logs">日志类型</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请选择日志类型!">
+                    <nz-select formControlName="logs" nzPlaceHolder="请选择日志类型">
+                        <nz-option nzValue="linux" nzLabel="linux 系统日志"></nz-option>
+                        <nz-option nzValue="windows" nzLabel="window 系统日志"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="remark">备注</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <textarea rows="4" nz-input formControlName="remark" id="remark"></textarea>
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #updateModel>
+    <div [formName]="updateForm" #updateFormComponent>
+        <form nz-form [formGroup]="updateForm">
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="vmName">主机名称</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入正确的主机名称!">
+                    <input nz-input formControlName="vmName" [ngModel]="updateData._source.vmName" id="vmName">
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="ip">IP地址</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入正确的IP地址!">
+                    {{ updateData._source.ip}}
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="device">设备类型</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请选择设备类型!">
+                    <nz-select formControlName="device" [ngModel]="updateData._source.device" nzPlaceHolder="请选择设备类型">
+                        <nz-option nzValue="system" nzLabel="操作系统"></nz-option>
+                        <nz-option nzValue="app" nzLabel="应用系统"></nz-option>
+                        <nz-option nzValue="sucerity" nzLabel="安全设备" nzDisabled></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="logs">日志类型</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请选择日志类型!">
+                    <nz-select formControlName="logs" [ngModel]="updateData._source.logs" nzPlaceHolder="请选择日志类型">
+                        <nz-option nzValue="linux" nzLabel="linux 系统日志"></nz-option>
+                        <nz-option nzValue="windows" nzLabel="window 系统日志"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label nzRequired [nzSpan]="6" nzFor="remark">备注</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <textarea rows="4" nz-input formControlName="remark" [ngModel]="updateData._source.remark"
+                        id="remark"></textarea>
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </div>
+</ng-template>

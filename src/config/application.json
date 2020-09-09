@@ -1,0 +1,22 @@
+{
+  "defaultRegion": "cn-north-3",
+
+  "redirect_uri": "http://console-cloud-dev.inspurcloud.cn/security",
+  "authUrl": "https://auth-cloud-dev.inspurcloud.cn/auth",
+  "authRealm": "picp",
+  "authClientId": "console",
+
+  "websocketServer": "ws://service-cloud-dev.inspurcloud.cn/websocket/v1/servers",
+  "marketUrl": "https://cloud.inspur.com/market/",
+  "productDocument": "http://console-cloud-dev.inspurcloud.cn/document/",
+  "filingBook": "https://cloud.inspur.com/docs.docbasc.dhtml",
+
+  "serviceAPI": "http://service-cloud-dev.inspurcloud.cn",
+  "bssFront": "http://10.221.2.4.xip.io:9080",
+  "bssAPI": "http://10.221.2.6.xip.io:9080",
+  "cloudType": "public",
+
+  "logo": {
+    "url": "assets/images/logo.png"
+  }
+}

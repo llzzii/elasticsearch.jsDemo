@@ -1,0 +1,214 @@
+<div [class]="fullClass">
+    <div nz-row class="pad10">
+        <div class="pull-left">
+            <nz-radio-group [(ngModel)]="selectedTime" [nzButtonStyle]="'solid'">
+                <label nz-radio-button *ngFor="let times of timesData" [nzValue]="times.value">{{times.label}}</label>
+            </nz-radio-group>
+            <nz-range-picker [nzRanges]="ranges1" nzShowTime nzFormat="yyyy/MM/dd HH:mm:ss" ngModel
+                (ngModelChange)="onChange($event)"></nz-range-picker>
+        </div>
+        <div class="pull-right">
+            <nz-select class="vm-class" [(ngModel)]="selectedVms" nzPlaceHolder="请选择资产">
+                <nz-option *ngFor="let vm of vmsData" [nzValue]="vm.id" [nzLabel]="vm.name"></nz-option>
+            </nz-select>
+            <button class="full-button" (click)="checkFull()" nz-button><i nz-icon nzType="column-width"
+                    nzTheme="outline"></i></button>
+        </div>
+    </div>
+    <div nz-row>
+        <div class="panel-container" nz-col [nzSpan]="18">
+            <div nz-row style="margin-bottom: 20px;">
+                <div class="over-con" nz-col nzSpan="6">
+                    <div class="overview-num">
+                        <span class="overview-number">{{896523 | number}}</span>
+                    </div>
+                    <div class="overview-name">日志总数</div>
+                </div>
+                <div class="over-con" nz-col nzSpan="6">
+                    <div class="overview-num">
+                        <span class="overview-number">{{896523 | number}}</span>
+                    </div>
+                    <div class="overview-name">日志总数</div>
+                </div>
+                <div class="over-con" nz-col nzSpan="6">
+                    <div class="overview-num">
+                        <span class="overview-number">{{896523 | number}}</span>
+                    </div>
+                    <div class="overview-name">日志总数</div>
+                </div>
+                <div class="over-con border-none" nz-col nzSpan="6">
+                    <div class="overview-num">
+                        <span class="overview-number">{{896523 | number}}</span>
+                    </div>
+                    <div class="overview-name">日志总数</div>
+                </div>
+            </div>
+            <div class="chart-panel">
+                <div class="chart-panel-header">折线图</div>
+                <div class="chart-scroll clearfix">
+                    <div style="width:100%;height:180px" echarts [options]="getLineOption()"></div>
+                </div>
+            </div>
+            <div class="chart-panel">
+                <div class="chart-panel-header">柱状图</div>
+                <div class="chart-scroll clearfix">
+                    <div style="width:100%;height:180px" echarts [options]="getBarOption2()"></div>
+                </div>
+            </div>
+            <!-- <div class="chart-panel" style="height:360px">
+                <div class="chart-panel-header">地图</div>
+                <div class="chart-scroll clearfix">
+                    <div style="width:100%;height:280px" id='map'></div>
+                </div>
+            </div> -->
+            <div class="chart-panel">
+                <div class="chart-panel-header">CPU资源利用率</div>
+                <div class="chart-scroll clearfix">
+                    <div class="chart-scroll-before" (click)="leftData(displayCpus, cpus)"><i
+                            class="anticon anticon-left"></i></div>
+                    <div class="chart-scroll-after" (click)="rightData(displayCpus, cpus)"><i
+                            class="anticon anticon-right"></i></div>
+                    <div class="chart-area" *ngFor="let data of displayCpus">
+                        <div class="chart" echarts [options]="getOption(data)"></div>
+                        <div class="desc">
+                            <div class="title">{{data.title}}</div>
+                            <div>总数/已用</div>
+                            <div><span>{{data.sum}}</span>/{{data.used}} 核</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-panel">
+                <div class="chart-panel-header">存储资源利用率</div>
+                <div class="chart-scroll clearfix">
+                    <div class="chart-scroll-before" (click)="leftData(displayDisks, disks)"><i
+                            class="anticon anticon-left"></i></div>
+                    <div class="chart-scroll-after" (click)="rightData(displayDisks, disks)"><i
+                            class="anticon anticon-right"></i></div>
+                    <div class="chart-area bar-chart-area" *ngFor="let data of displayDisks">
+                        <div class="chart bar-chart" echarts [options]="getBarOption(data)"></div>
+                        <div class="desc bar-desc">
+                            <div class="title">{{data.title}}</div>
+                            <div>总数/已用</div>
+                            <div><span>{{data.sum}}</span>/{{data.used}} GiB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-panel">
+                <div class="chart-panel-header">内存资源利用率</div>
+                <div class="chart-scroll clearfix">
+                    <div class="chart-scroll-before" (click)="leftData(displayMems, mems)"><i
+                            class="anticon anticon-left"></i></div>
+                    <div class="chart-scroll-after" (click)="rightData(displayMems, mems)"><i
+                            class="anticon anticon-right"></i></div>
+                    <div class="chart-area" *ngFor="let data of displayMems">
+                        <div class="chart" echarts [options]="getOption(data)"></div>
+                        <div class="desc">
+                            <div class="title">{{data.title}}</div>
+                            <div>总数/已用</div>
+                            <div><span>{{data.sum}}</span>/{{data.used}} GiB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-panel">
+                <div class="chart-panel-header">平台资源</div>
+                <div class="resource-container" nz-row [nzGutter]="20">
+                    <div nz-col [nzSpan]="12">
+                        <div class="resource-panel">
+                            <div class="icon-area pull-left">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="pull-left">云服务器 InServer (6)</div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <div class="resource-panel">
+                            <div class="icon-area pull-left">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="pull-left">云硬盘 InDisk (6)</div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <div class="resource-panel">
+                            <div class="icon-area pull-left">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="pull-left">私有网络 VPC (6)</div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <div class="resource-panel">
+                            <div class="icon-area pull-left">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="pull-left">物理主机 (6)</div>
+                        </div>
+                    </div>
+                    <div align="center">
+                        <a>查看全部资源 ></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-container" nz-col [nzSpan]="6">
+            <div class="alarm-panel">
+                <div class="chart-panel-header">告警统计</div>
+                <div class="alarm-item">
+                    <div class="pull-left alarm-type urgent">紧急</div>
+                    <div class="pull-right">200</div>
+                </div>
+                <div class="alarm-item">
+                    <div class="pull-left alarm-type main">主要</div>
+                    <div class="pull-right">200</div>
+                </div>
+                <div class="alarm-item">
+                    <div class="pull-left alarm-type minor">次要</div>
+                    <div class="pull-right">200</div>
+                </div>
+                <div class="alarm-item">
+                    <div class="pull-left alarm-type general">一般</div>
+                    <div class="pull-right">200</div>
+                </div>
+            </div>
+            <div class="notice-panel">
+                <div class="chart-panel-header">资源使用情况</div>
+                <div class="notice-item chart-area">
+                    <div class="chart" echarts [options]="getOption()"></div>
+                    <div class="desc">
+                        <div class="title">cpu</div>
+                        <div>总数/已用</div>
+                        <div><span>4</span>/1 核</div>
+                    </div>
+                </div>
+                <div class="notice-item chart-area">
+                    <div class="chart" echarts [options]="getOption()"></div>
+                    <div class="desc">
+                        <div class="title">内存</div>
+                        <div>总数/已用</div>
+                        <div><span>8G</span>/1G</div>
+                    </div>
+                </div>
+                <div class="notice-item chart-area">
+                    <div class="chart" echarts [options]="getOption()"></div>
+                    <div class="desc">
+                        <div class="title">存储空间</div>
+                        <div>总数/已用</div>
+                        <div><span>500G</span>/100G</div>
+                    </div>
+                </div>
+                <div class="notice-item chart-area">
+                    <div class="chart" echarts [options]="getOption()"></div>
+                    <div class="desc">
+                        <div class="title">网络流量</div>
+                        <div>入站/出站</div>
+                        <div><span>20.2B/s</span>/10.2B/s</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

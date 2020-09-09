@@ -1,0 +1,31 @@
+{
+  "label": "日志审计",
+  "icon": "iconfontheader icon-rizhizhongxinlogcenter",
+  "sideLists": [
+    {
+      "label": "概览",
+      "icon": "fas fa-tachometer-alt",
+      "link": "overview"
+    },
+    {
+      "label": "报表中心",
+      "icon": "fas fa-puzzle-piece",
+      "link": "report"
+    },
+    {
+      "label": "系统管理",
+      "icon": "fab fa-cloudversify",
+      "children": [
+        {
+          "label": "资产管理",
+          "link": "system/vms"
+        },
+        {
+          "label": "子目录2",
+          "link": "application-instance"
+        }
+      ],
+      "open": false
+    }
+  ]
+}
